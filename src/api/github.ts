@@ -8,7 +8,7 @@ interface GitHubRunsResponse {
 }
 
 export async function fetchRepos(): Promise<Repo[]> {
-  const url = `${GITHUB_API_BASE}/orgs/${ORG}/repos?type=public&per_page=100&sort=updated`
+  const url = `${GITHUB_API_BASE}/users/${ORG}/repos?type=public&per_page=100&sort=updated`
   return cachedFetch<Repo[]>(url)
 }
 

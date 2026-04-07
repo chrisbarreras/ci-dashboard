@@ -1,4 +1,4 @@
-export const ORG = 'Thomas-J-Barreras-Consulting'
+export const ORG = 'chrisbarreras'
 export const GITHUB_API_BASE = 'https://api.github.com'
 export const REFRESH_INTERVAL_MS = 5 * 60 * 1000
 export const SLOW_REFRESH_INTERVAL_MS = 8 * 60 * 1000

@@ -3,7 +3,7 @@ import { mockRepos, mockRuns } from './fixtures'
 import { GITHUB_API_BASE, ORG } from '../../config'
 
 export const handlers = [
-  http.get(`${GITHUB_API_BASE}/orgs/${ORG}/repos`, () => {
+  http.get(`${GITHUB_API_BASE}/users/${ORG}/repos`, () => {
     return HttpResponse.json(mockRepos, {
       headers: {
         'x-ratelimit-remaining': '55',
