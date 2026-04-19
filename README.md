@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# CI Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**A single-pane view of build health across an entire GitHub organization — shipped as a static site, refreshed in real time.**
 
-Currently, two official plugins are available:
+> **[View the live dashboard →](https://thomas-j-barreras-consulting.github.io/ci-dashboard/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![CI Dashboard preview](docs/preview.png)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## What this project demonstrates
 
-## Expanding the ESLint configuration
+This is a production-grade reference project by **[Thomas J Barreras Consulting](https://thomas-j-barreras-consulting.github.io/ci-dashboard/)**, built to showcase the kind of modern front-end work we deliver for clients.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+In a single, deployable app it exercises:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Modern React architecture** — React 19, TypeScript strict mode, functional components, custom hooks, and clean separation between API, state, and presentation layers.
+- **Resilient API integration** — typed GitHub REST client with ETag-based HTTP caching, in-memory TTL cache, and graceful error propagation.
+- **Rate-limit-aware polling** — adaptive refresh intervals that automatically slow down or pause as the GitHub API quota shrinks, then resume at the reset window. No 429s, no dropped updates.
+- **Real-time UX polish** — live countdown to next refresh, manual refresh, loading and refreshing states, non-blocking rate-limit banners, and an accessible status system.
+- **Thoughtful UI/UX** — dark-mode-first design, responsive grid layout, per-repo drill-down routing, and visual cues that make red builds obvious at a glance.
+- **Test-first engineering** — unit and integration tests with Vitest, React Testing Library, and MSW for realistic network mocking.
+- **Zero-infrastructure deployment** — ships as static assets to GitHub Pages through a one-command pipeline.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Technology stack
+
+| Layer | Tools |
+|---|---|
+| Framework | React 19, React Router 7 |
+| Language | TypeScript 6 (strict) |
+| Build | Vite 8 |
+| Styling | Tailwind CSS 4 |
+| Testing | Vitest, React Testing Library, MSW, jsdom |
+| Quality | ESLint 9, typescript-eslint |
+| Hosting | GitHub Pages (static) |
+
+---
+
+## Architectural highlights
+
+- **`useDashboardData`** — a single composable hook that owns fetch lifecycle, cache reads, error state, and adaptive scheduling. UI components stay thin and declarative.
+- **Adaptive scheduler** — reads live rate-limit headers after every request and re-plans the next refresh. Three tiers: normal (5 min), slow (8 min when remaining ≤ 15), and paused (resume at reset when remaining ≤ 5).
+- **ETag caching** — conditional requests keep quota usage low and payloads small, so the dashboard can poll aggressively without burning through the 60 req/hr unauthenticated limit.
+- **HashRouter for static hosting** — client-side routing with deep-linkable repo detail pages on a pure static deploy, no server rewrites required.
+
+---
+
+## Running locally
+
+```bash
+npm install
+npm run dev        # Vite dev server with HMR
+npm test           # Vitest suite
+npm run build      # Type-check + production build
+npm run deploy     # Publish dist/ to GitHub Pages
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Work with us
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+If you need this kind of engineering — clean React front-ends, resilient API integration, or pragmatic DevOps tooling — **[Thomas J Barreras Consulting](https://thomas-j-barreras-consulting.github.io/ci-dashboard/)** is available for commissioned work.
