@@ -6,6 +6,8 @@ interface RefreshIndicatorProps {
   nextRefreshAt: number | null
   onManualRefresh: () => void
   isRefreshing: boolean
+  autoRefreshEnabled: boolean
+  onToggleAutoRefresh: (enabled: boolean) => void
 }
 
 export default function RefreshIndicator({
@@ -13,6 +15,8 @@ export default function RefreshIndicator({
   nextRefreshAt,
   onManualRefresh,
   isRefreshing,
+  autoRefreshEnabled,
+  onToggleAutoRefresh,
 }: RefreshIndicatorProps) {
   const [, setTick] = useState(0)
 
@@ -25,15 +29,26 @@ export default function RefreshIndicator({
     ? `Updated ${formatTimeSince(lastRefresh)}`
     : 'Loading...'
 
-  const nextRefreshText = nextRefreshAt
-    ? `Next: ${formatCountdown(nextRefreshAt)}`
-    : ''
+  const showCountdown = autoRefreshEnabled && nextRefreshAt !== null
+  const nextRefreshText = showCountdown ? `Next: ${formatCountdown(nextRefreshAt!)}` : ''
 
   return (
     <div className="flex items-center gap-3 text-xs text-slate-500">
       <span>{lastRefreshText}</span>
       {nextRefreshText && <span>&middot;</span>}
       {nextRefreshText && <span>{nextRefreshText}</span>}
+      <span>&middot;</span>
+      <button
+        onClick={() => onToggleAutoRefresh(!autoRefreshEnabled)}
+        className="text-slate-400 hover:text-slate-200 transition-colors"
+        aria-pressed={autoRefreshEnabled}
+        aria-label={`Auto-refresh ${autoRefreshEnabled ? 'on' : 'off'}`}
+      >
+        Auto-refresh:{' '}
+        <span className={autoRefreshEnabled ? 'text-emerald-400' : 'text-slate-500'}>
+          {autoRefreshEnabled ? 'On' : 'Off'}
+        </span>
+      </button>
       <button
         onClick={onManualRefresh}
         disabled={isRefreshing}

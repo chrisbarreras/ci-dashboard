@@ -11,6 +11,8 @@ interface LayoutProps {
   onManualRefresh: () => void
   isRefreshing: boolean
   rateLimitInfo: RateLimitInfo
+  autoRefreshEnabled: boolean
+  onToggleAutoRefresh: (enabled: boolean) => void
   error: string | null
 }
 
@@ -21,6 +23,8 @@ export default function Layout({
   onManualRefresh,
   isRefreshing,
   rateLimitInfo,
+  autoRefreshEnabled,
+  onToggleAutoRefresh,
   error,
 }: LayoutProps) {
   return (
@@ -34,6 +38,8 @@ export default function Layout({
               nextRefreshAt={nextRefreshAt}
               onManualRefresh={onManualRefresh}
               isRefreshing={isRefreshing}
+              autoRefreshEnabled={autoRefreshEnabled}
+              onToggleAutoRefresh={onToggleAutoRefresh}
             />
           </div>
           <a

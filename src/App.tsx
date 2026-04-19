@@ -13,6 +13,8 @@ function App() {
     lastRefresh,
     nextRefreshAt,
     rateLimitInfo,
+    autoRefreshEnabled,
+    setAutoRefreshEnabled,
     refresh,
   } = useDashboardData()
 
@@ -24,6 +26,8 @@ function App() {
         onManualRefresh={refresh}
         isRefreshing={isRefreshing}
         rateLimitInfo={rateLimitInfo}
+        autoRefreshEnabled={autoRefreshEnabled}
+        onToggleAutoRefresh={setAutoRefreshEnabled}
         error={error}
       >
         <Routes>

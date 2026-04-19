@@ -9,6 +9,8 @@ import {
   RATE_LIMIT_STOP_THRESHOLD,
 } from '../config'
 
+const AUTO_REFRESH_STORAGE_KEY = 'ci-dashboard.autoRefresh'
+
 interface DashboardState {
   repos: RepoWithRuns[]
   isLoading: boolean
@@ -17,7 +19,17 @@ interface DashboardState {
   lastRefresh: number | null
   nextRefreshAt: number | null
   rateLimitInfo: RateLimitInfo
+  autoRefreshEnabled: boolean
+  setAutoRefreshEnabled: (enabled: boolean) => void
   refresh: () => void
+}
+
+function readStoredAutoRefresh(): boolean {
+  try {
+    return localStorage.getItem(AUTO_REFRESH_STORAGE_KEY) === 'true'
+  } catch {
+    return false
+  }
 }
 
 export function useDashboardData(): DashboardState {
@@ -32,7 +44,22 @@ export function useDashboardData(): DashboardState {
     limit: 60,
     resetAt: 0,
   })
+  const [autoRefreshEnabled, setAutoRefreshEnabledState] = useState<boolean>(readStoredAutoRefresh)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const autoRefreshEnabledRef = useRef(autoRefreshEnabled)
+
+  useEffect(() => {
+    autoRefreshEnabledRef.current = autoRefreshEnabled
+  }, [autoRefreshEnabled])
+
+  const setAutoRefreshEnabled = useCallback((enabled: boolean) => {
+    setAutoRefreshEnabledState(enabled)
+    try {
+      localStorage.setItem(AUTO_REFRESH_STORAGE_KEY, String(enabled))
+    } catch {
+      // ignore persistence failure — in-memory state still works
+    }
+  }, [])
 
   const fetchData = useCallback(async (isInitial = false) => {
     if (isInitial) {
@@ -88,27 +115,42 @@ export function useDashboardData(): DashboardState {
 
     timerRef.current = setTimeout(async () => {
       await fetchData(false)
-      scheduleNextRefresh()
+      if (autoRefreshEnabledRef.current) {
+        scheduleNextRefresh()
+      }
     }, interval)
   }, [fetchData])
 
   const refresh = useCallback(() => {
     fetchData(false).then(() => {
-      scheduleNextRefresh()
+      if (autoRefreshEnabledRef.current) {
+        scheduleNextRefresh()
+      }
     })
   }, [fetchData, scheduleNextRefresh])
 
   useEffect(() => {
-    fetchData(true).then(() => {
-      scheduleNextRefresh()
-    })
+    fetchData(true)
+  }, [fetchData])
 
+  useEffect(() => {
+    if (!autoRefreshEnabled) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
+      setNextRefreshAt(null)
+      return
+    }
+
+    scheduleNextRefresh()
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current)
+        timerRef.current = null
       }
     }
-  }, [fetchData, scheduleNextRefresh])
+  }, [autoRefreshEnabled, scheduleNextRefresh])
 
   return {
     repos,
@@ -118,6 +160,8 @@ export function useDashboardData(): DashboardState {
     lastRefresh,
     nextRefreshAt,
     rateLimitInfo,
+    autoRefreshEnabled,
+    setAutoRefreshEnabled,
     refresh,
   }
 }
