@@ -6,7 +6,7 @@
 
 ![CI Dashboard preview](docs/preview.png)
 
-**Project drilldown
+**Project drilldown**
 ![CI Dashboard preview](docs/preview2.png)
 ---
 
