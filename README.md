@@ -5,7 +5,7 @@
 > **[View the live dashboard →](https://thomas-j-barreras-consulting.github.io/ci-dashboard/)**
 
 ![CI Dashboard preview](docs/preview.png)
-
+![CI Dashboard preview](docs/preview2.png)
 ---
 
 ## What this project demonstrates
